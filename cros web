@@ -1,0 +1,119 @@
+from tkinter import *
+from tkinter import ttk
+import mysql.connector as mysql
+import tkinter.messagebox as Msg
+
+class Category:
+    
+    def __init__(self,root):
+        self.root=root
+        self.root.geometry('700x500+0+0')
+        category_id = StringVar()
+        category_name = StringVar()
+
+        def ShowData():
+            conn = mysql.connect(host='localhost', user='root', password='', database='dbbsp5b')
+            cursor = conn.cursor()
+            cursor.execute('select * from tbcategory')
+            result = cursor.fetchall()
+
+            if len(result) !=0:
+                self.member_record.delete(*self.member_record.get_children())
+
+                for row in result:
+                    self.member_record.insert('', END, values=row)
+                    cursor.execute('commit')
+
+            conn.close()
+
+
+    #Create Main frmae
+        Mainframe = Frame(self.root,bd=7,width=900,height=600,bg='cadetblue')
+        Mainframe.grid()
+        #Create title frame
+        titleframe = Frame(Mainframe,bd=5,width=900,height=200,relief=RIDGE)
+        titleframe.grid(row=0,column=0)
+        #Create midFrame
+        midframe = Frame(Mainframe,bd=5,width=900,height=600,relief=RIDGE,bg='cadetblue')
+        midframe.grid(row=2,column=0)
+        #create buttonframe
+        buttonframe = Frame(Mainframe,bd=5,width=900,height=200,relief=RIDGE,bg='cadetblue')
+        buttonframe.grid(row=3,column=0)
+        #add buttomframe
+        Butframe = Frame(Mainframe, bd=5, width=900, height=700, relief=RIDGE, bg='cadetblue')
+        Butframe.grid(row=4, column=0)
+        #create leftframe
+        leftframe = Frame(midframe,bd=5,width=900,height=300,relief=RIDGE,bg='cadetblue')
+        leftframe.pack(side=LEFT,padx=5,pady=3)
+        # create innerframe
+        innerframe = Frame(leftframe,bd=5,width=900,height=200,relief=RIDGE)
+        innerframe.pack(side=TOP,padx=5,pady=3)
+
+#################################################################################################################
+
+        fonts = ('time news roman', 16)
+
+        lbltitle = Label(titleframe, font=fonts,text='Category Manage', bd=5, anchor='w', justify=LEFT)
+        lbltitle.grid(row=0, column=0)
+
+        lblcategoryid = Label(innerframe, font=fonts,text='CategoryID', bd=5, anchor='w', justify=LEFT)
+        lblcategoryid.grid(row=0, column=0)
+        txtcategoryid = Entry(innerframe, font=fonts, textvariable=category_id)
+        txtcategoryid.grid(row=0, column=1)
+
+        lblcategoryname = Label(innerframe, font=fonts, text='CategoryName', bd=5, anchor='w', justify=LEFT)
+        lblcategoryname.grid(row=1, column=0)
+        txtcategoryname = Entry(innerframe, font=fonts, textvariable=category_name)
+        txtcategoryname.grid(row=1, column=1)
+
+        btnsave = Button(buttonframe, font=fonts, text='Save', width=8, height=1, justify=CENTER)
+        btnsave.grid(row=0, column=0)
+        btnedit = Button(buttonframe, font=fonts, text='Edit', width=8, height=1, justify=CENTER)
+        btnedit.grid(row=0, column=1)
+        btndelete = Button(buttonframe, font=fonts, text='Delete', width=8, height=1, justify=CENTER)
+        btndelete.grid(row=0, column=2)
+        btnexit = Button(buttonframe, font=fonts, text='Exit', width=8, height=1, justify=CENTER)
+        btnexit.grid(row=0, column=3)
+        
+        ## Scrollbar
+
+        scroll_y = Scrollbar(Butframe, orient=VERTICAL)
+        self.member_record=ttk.Treeview(Butframe, height=10, column=('CategoryID','CategoryName'), yscrollcommand=scroll_y)
+        scroll_y.pack(side=RIGHT, fill=Y)
+        self.member_record.heading('CategoryID', text='CategoryID')
+        self.member_record.heading('CategoryName', text='CategoryName')
+        self.member_record['show']="headings"
+        self.member_record.column('CategoryID', width=200)
+        self.member_record.column('CategoryName', width=200)
+        self.member_record.pack(fill=BOTH, expand=1)
+        self.member_record.bind('<ButtonRelease','')
+
+        ShowData()
+
+
+if(__name__=='__main__'):
+    root=Tk()
+    application =Category(root)
+    root.mainloop()
+
+
+
+    ############################################################
+    #                                                          #
+    #                    Category Manage                       #
+    #                          _______________________         #
+    #        Category ID      |_______________________|        #
+    #                          _______________________         #
+    #        Category Name    |_______________________|        #
+    #       ________    ________    ________    ________       #
+    #      |__Save__|  |__Edit__|  |_Delete_|  |__Exit__|      #
+    #      ______________________________________________      #
+    #     |____Category_ID____|______Category_Name_______|     #
+    #     |                                              |     #
+    #     |                                              |     #
+    #     |                                              |     #
+    #     |                                              |     #
+    #     |                                              |     #
+    #     |______________________________________________|     #
+    #                                                          #
+    ############################################################
